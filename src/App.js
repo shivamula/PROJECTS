@@ -1,65 +1,70 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Loading } from "./Components/Loading";
+import React, { useEffect, useState } from "react";
+import Search from "./Components/Search";
+import "./index.css";
 
-import { Tours } from "./Components/Tours";
-const url = "https://course-api.com/react-tours-project";
 function App() {
-  const [loading, setLoading] = useState(true);
-  const [tours, setTours] = useState([]);
-  const removeTour = (id) => {
-    const newTours = tours.filter((tour) => tour.id !== id);
-    setTours(newTours);
-    console.log(newTours);
-  };
-  const fetchTours = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(url);
-      const tours = await response.json();
-      setLoading(false);
-      setTours(tours);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
+  const [data, setData] = useState([]);
 
-    console.log(tours);
-  };
   useEffect(() => {
-    fetchTours();
-  }, []);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const tours = await axios("https://course-api.com/react-tours-project");
-  //     setTours(tours.data);
-  //     console.log(tours.data);
-  //   };
-  //   fetchData();
-  // }, []);
-  if (loading) {
-    return (
-      <main>
-        <Loading />
-      </main>
-    );
-  }
-  return (
-    <div className="App">
-      {/* {tours.map((item) => {
-        return (
-          <div>
-            <h1>{item.name}</h1>
-            <h1>{item.id}</h1>
-            <img src={item.image} />
-            <p>{item.info}</p>
-            <h5>{item.price}</h5>
-          </div>
-        );
-      })} */}
+    fetch(
+      "https://hotels4.p.rapidapi.com/locations/v2/search?query=new%20york&locale=en_US&currency=USD",
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": "hotels4.p.rapidapi.com",
+          "x-rapidapi-key":
+            "f5349089a5mshe441359d794b838p1498b9jsn7771da995a68",
+        },
+      }
+    )
+      .then((response) => response.json())
 
-      <Tours tours={tours} removeTour={removeTour} />
-      <Loading />
+      .then((data) => {
+        console.log(data.suggestions);
+        setData(data.suggestions);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+  return (
+    <div>
+      {Object.keys.length > 0
+        ? data.map((item, index) => {
+            return (
+              <div key={index}>
+                <h5>{item.group}</h5>
+                <div>
+                  {item.entities.map((sub, index) => {
+                    return (
+                      <table>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>geo id</th>
+                          <th>Destination Id</th>
+                          <th>landmarkCityDestinationId</th>
+                          <th>latitude</th>
+                          <th>longitude</th>
+                        </tr>
+                        <td>{sub.name}</td>
+                        <td>{sub.type}</td>
+                        <td>{sub.geoId}</td>
+                        <td>{sub.destinationId}</td>
+                        <td>{sub.landmarkCityDestinationId}</td>
+                        <td>{sub.latitude}</td>
+                        <td>{sub.longitude}</td>
+                      </table>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })
+        : ""}
+      {/* <div>
+          <h1>{Object.keys}</h1>
+        </div> */}
     </div>
   );
 }
