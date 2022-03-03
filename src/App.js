@@ -7,6 +7,11 @@ const url = "https://course-api.com/react-tours-project";
 function App() {
   const [loading, setLoading] = useState(true);
   const [tours, setTours] = useState([]);
+  const removeTour = (id) => {
+    const newTours = tours.filter((tour) => tour.id !== id);
+    setTours(newTours);
+    console.log(newTours);
+  };
   const fetchTours = async () => {
     setLoading(true);
     try {
@@ -53,7 +58,7 @@ function App() {
         );
       })} */}
 
-      <Tours tours={tours} />
+      <Tours tours={tours} removeTour={removeTour} />
       <Loading />
     </div>
   );
